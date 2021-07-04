@@ -10,8 +10,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class Todo {
 
-   
-
 	@Id
     @GeneratedValue(strategy  = GenerationType.IDENTITY)
     @Column(name = "todo_id", nullable = false, updatable = false, unique = true)
@@ -39,5 +37,10 @@ public class Todo {
     	this.status = status;
 	}
 
-    
+
+    public Todo(String title, String description, boolean status) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+    }
 }

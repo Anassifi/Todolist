@@ -7,10 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pragmatic.anassifi.todolist.mysql.model.Todo;
 import com.pragmatic.anassifi.todolist.mysql.model.User;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository("mysqlTodoRepository")
 @Transactional(transactionManager = "transactionManagerUser")
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-    List<Todo> findByUser(User user);
+    Optional<Todo> findTodoByUser(User user);
+
 }

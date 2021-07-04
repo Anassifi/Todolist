@@ -7,10 +7,10 @@ import com.pragmatic.anassifi.todolist.mysql.model.Todo;
 import com.pragmatic.anassifi.todolist.mysql.model.User;
 
 public interface ITodoService {
-    List<Todo> getTodoByUser(User user);
+    Optional<Todo> getTodoByUser(User user);
     Optional<Todo> getTodoById(Long id);
-    void addTodo(Long id, String title, String description, boolean status);
+    Todo addTodo(Todo todo);
     void deleteTodo(Long id);
-    void saveTodo(Todo todo);
+    List<Todo> getAllTodos();
 }
 

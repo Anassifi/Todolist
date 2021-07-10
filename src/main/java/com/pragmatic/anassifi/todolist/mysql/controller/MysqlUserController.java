@@ -3,6 +3,8 @@ package com.pragmatic.anassifi.todolist.mysql.controller;
 import com.pragmatic.anassifi.todolist.mysql.exception.UserNotFoundException;
 import com.pragmatic.anassifi.todolist.mysql.model.User;
 import com.pragmatic.anassifi.todolist.mysql.repository.UserRepository;
+import com.pragmatic.anassifi.todolist.mysql.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +14,9 @@ import java.util.List;
 public class MysqlUserController {
 
 	private final UserRepository repository;
+
+	@Autowired
+	private UserService service;
 
 	public MysqlUserController(UserRepository repository) {
 		this.repository = repository;
@@ -24,7 +29,7 @@ public class MysqlUserController {
 
 	@PostMapping("/users")
 	User newUser(@RequestBody User newUser) {
-		return repository.save(newUser);
+		return service.save(newUser);
 	}
 
 	@GetMapping("/users/{id}")
@@ -35,7 +40,7 @@ public class MysqlUserController {
 	@PutMapping("/users/{id}")
 	User replaceUser(@RequestBody User newUser, @PathVariable Long id) {
 		return repository.findById(id).map(user -> {
-			user.setUsername(newUser.getUsername());
+			user.setUserName(newUser.getUserName());
 			user.setPassword(newUser.getPassword());
 			return repository.save(user);
 		}).orElseGet(() -> {

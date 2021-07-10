@@ -40,7 +40,6 @@ public class MysqlDBConfig {
         Map<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto", "create");
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-//        properties.put("driverClassName", "com.mysql.cj.jdbc.Driver");
         return builder
                 .dataSource(dataSource)
                 .properties(properties)
@@ -57,19 +56,5 @@ public class MysqlDBConfig {
     {
         return new JpaTransactionManager(entityManagerFactory);
     }
-    
-//    @Bean
-//    @ConfigurationProperties(prefix = "spring.datasource.hikari")
-//    public HikariConfig hikariConfig() {
-//    	return new HikariConfig();
-//    }
-//    
-//   @Bean
-//	public DataSource dataSource() {
-//		return new HikariDataSource(hikariConfig());
-//	}
-//   
-    
-    
     
 }

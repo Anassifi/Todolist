@@ -6,7 +6,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email")})
 public class User{
 
     @Id
@@ -30,13 +29,16 @@ public class User{
     
     @NotBlank(message = "Username is mandatory")
     @Column(unique = true, nullable = false)
-    private String username;
+    @Size(max = 20)
+    private String userName;
     
     @NotBlank(message = "Password is mandatory")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$")
+    @Size(max = 120)
     @Column(nullable = false)
     private String password;
-    
+
+    @NotBlank
+    @Size(max = 50)
     @NotNull
     @Email
     private String email;

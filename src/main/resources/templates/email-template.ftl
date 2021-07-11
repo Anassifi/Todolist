@@ -27,7 +27,7 @@
     <tr>
         <td bgcolor="#eaeaea" style="padding: 40px 30px 40px 30px;">
             <p>Dear ${name},</p>
-            <p>Welcome to our TodoList app please confirm you email to <b>START!</b></p>
+            <p>Welcome to our TodoList app please confirm you email <a href="http://localhost:8080/registration/confirm?token=${token}">Here</a></p>
             <p>Thanks</p>
         </td>
     </tr>

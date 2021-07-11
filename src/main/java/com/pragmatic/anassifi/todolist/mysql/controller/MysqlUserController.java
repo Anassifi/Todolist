@@ -29,7 +29,7 @@ public class MysqlUserController {
 
 	@PostMapping("/users")
 	User newUser(@RequestBody User newUser) {
-		return service.save(newUser);
+		return repository.save(newUser);
 	}
 
 	@GetMapping("/users/{id}")

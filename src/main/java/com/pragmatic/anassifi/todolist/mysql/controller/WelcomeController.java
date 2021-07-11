@@ -2,6 +2,7 @@ package com.pragmatic.anassifi.todolist.mysql.controller;
 
 import com.pragmatic.anassifi.todolist.mysql.model.AuthRequest;
 import com.pragmatic.anassifi.todolist.mysql.model.User;
+import com.pragmatic.anassifi.todolist.mysql.service.RegistrationService;
 import com.pragmatic.anassifi.todolist.mysql.service.UserService;
 import com.pragmatic.anassifi.todolist.mysql.util.JwtUtil;
 import freemarker.template.Configuration;
@@ -16,10 +17,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -28,6 +26,9 @@ import java.util.Map;
 
 @RestController
 public class WelcomeController {
+
+    @Autowired
+    RegistrationService registrationService;
 
     @Autowired
     UserService userService;
@@ -47,12 +48,15 @@ public class WelcomeController {
     @GetMapping("/")
     public String welcome() {
 
-         return "Welcome to todolist app";
+        return "Welcome to todolist app";
     }
 
     @PostMapping("/authenticate")
-    public String generateToken(@RequestBody AuthRequest authRequest) throws Exception {
+    public String generateToken(@RequestBody AuthRequest authRequest, User user) throws Exception {
+        System.out.println(user.getEnabled());
         try {
+//            if (!user.getEnabled()) return "You need to confirm your email";
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
             );
@@ -64,17 +68,17 @@ public class WelcomeController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> addNewUser(@RequestBody User user, Map<String, Object> model) throws MessagingException, IOException, TemplateException {
+    public ResponseEntity<String> addNewUser(@RequestBody User user, Map<String, Object> model) throws MessagingException, IOException, TemplateException {
 
         model.put("name", user.getName());
         model.put("email", user.getEmail());
+        model.put("token", userService.signUpUser(user));
         model.put("signature", "Start adding your tasks now!");
 
         sendmail(user, model);
 
-        userService.save(user);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("User was created " + user.getUserName(), HttpStatus.OK);
     }
 
     private void sendmail(User user, Map<String, Object> model) throws MessagingException, IOException, TemplateException {
@@ -96,6 +100,11 @@ public class WelcomeController {
         helper.setSubject(emailSubject);
 
         javaMailSender.send(message);
+    }
+
+    @GetMapping("/registration/confirm")
+    public ResponseEntity<String> confirmRegistrationToken(@RequestParam("token") String token) {
+        return new ResponseEntity<>(registrationService.confirmToken(token), HttpStatus.OK);
     }
 
 

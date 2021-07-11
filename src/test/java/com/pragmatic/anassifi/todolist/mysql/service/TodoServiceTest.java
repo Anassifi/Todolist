@@ -40,7 +40,7 @@ class TodoServiceTest {
 
     List<Todo> tasks = new ArrayList<>();
 
-    User hakime = new User(1L, "Abdelhakim Nassifi", "Anassifi", "Anassifi2021@", "hakime@gmail.com", tasks);
+    User hakime = new User(1L, "Abdelhakim Nassifi", "Anassifi", "Anassifi2021@", "hakime@gmail.com", tasks, false);
 
     public Todo makeTask(Todo taskName , Long id, String name, String description){
         taskName.setId(id);

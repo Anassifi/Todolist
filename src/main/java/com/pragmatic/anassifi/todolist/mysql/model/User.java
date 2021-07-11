@@ -45,4 +45,6 @@ public class User{
 
     @OneToMany(mappedBy="user")
     private List<Todo> todo;
+
+    private Boolean enabled = false;
 }

@@ -15,7 +15,7 @@ import java.util.UUID;
 public class UserService {
 
     private final static String USER_NOT_FOUND_MSG =
-            "user with email %s not found";
+            "user with userName %s not found";
 
     @Autowired
     private BCryptPasswordEncoder encoder;
@@ -31,9 +31,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User findByEmail(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, email)));
+    public User findByUserName(String userName) throws UsernameNotFoundException {
+        User user = userRepository.findByUserName(userName);
+        
+        if(user == null) {
+            throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, userName));
+        }
+        return userRepository.findByUserName(userName);
     }
 
     public String signUpUser(User user) {

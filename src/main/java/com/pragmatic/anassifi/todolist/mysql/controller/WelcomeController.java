@@ -52,19 +52,23 @@ public class WelcomeController {
     }
 
     @PostMapping("/authenticate")
-    public String generateToken(@RequestBody AuthRequest authRequest, User user) throws Exception {
-        System.out.println(user.getEnabled());
-        try {
-//            if (!user.getEnabled()) return "You need to confirm your email";
+    public String generateToken(@RequestBody AuthRequest authRequest) throws Exception {
 
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
-            );
-        } catch (Exception ex) {
-            throw new Exception("Invalid Username or password");
+        User user = userService.findByUserName(authRequest.getUserName());
+
+        if (user.getEnabled()) {
+            try {
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
+                );
+            } catch (Exception ex) {
+                throw new Exception("Invalid Username or password");
+            }
+
+            return jwtUtil.generateToken(authRequest.getUserName());
+        } else {
+            throw new Exception("You need to confirm your email");
         }
-
-        return jwtUtil.generateToken(authRequest.getUserName());
     }
 
     @PostMapping("/register")

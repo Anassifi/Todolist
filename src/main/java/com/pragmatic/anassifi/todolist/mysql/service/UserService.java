@@ -27,7 +27,7 @@ public class UserService {
     private ConfirmationTokenService confirmationTokenService;
 
     public User save(User user) {
-//        user.setPassword(encoder.encode(user.getPassword()));
+        user.setPassword(encoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 

@@ -2,25 +2,19 @@ package com.pragmatic.anassifi.todolist.mysql.controller;
 
 import com.pragmatic.anassifi.todolist.mysql.model.AuthRequest;
 import com.pragmatic.anassifi.todolist.mysql.model.User;
+import com.pragmatic.anassifi.todolist.mysql.service.MailService;
 import com.pragmatic.anassifi.todolist.mysql.service.RegistrationService;
 import com.pragmatic.anassifi.todolist.mysql.service.UserService;
 import com.pragmatic.anassifi.todolist.mysql.util.JwtUtil;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Map;
 
@@ -28,16 +22,13 @@ import java.util.Map;
 public class WelcomeController {
 
     @Autowired
-    RegistrationService registrationService;
+    private RegistrationService registrationService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    JavaMailSender javaMailSender;
-
-    @Autowired
-    Configuration configuration;
+    private MailService mailService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -74,36 +65,17 @@ public class WelcomeController {
     @PostMapping("/register")
     public ResponseEntity<String> addNewUser(@RequestBody User user, Map<String, Object> model) throws MessagingException, IOException, TemplateException {
 
+        String template = "email-template";
+
         model.put("name", user.getName());
         model.put("email", user.getEmail());
         model.put("token", userService.signUpUser(user));
         model.put("signature", "Start adding your tasks now!");
 
-        sendmail(user, model);
+        mailService.sendmail(user, model, template);
 
 
         return new ResponseEntity<>("User was created " + user.getUserName(), HttpStatus.OK);
-    }
-
-    private void sendmail(User user, Map<String, Object> model) throws MessagingException, IOException, TemplateException {
-
-        final String emailToReciptient = user.getEmail();
-        final String emailSubject = "Successfully Registered To PragmaticTodolist";
-        MimeMessage message = javaMailSender.createMimeMessage();
-
-        //set Media Type
-        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED);
-        helper.addAttachment("logo.png", new ClassPathResource("logo.png"));
-
-        Template template = configuration.getTemplate("email-template.ftl");
-
-        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
-
-        helper.setTo(emailToReciptient);
-        helper.setText(html, true);
-        helper.setSubject(emailSubject);
-
-        javaMailSender.send(message);
     }
 
     @GetMapping("/registration/confirm")
